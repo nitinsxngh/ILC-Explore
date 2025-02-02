@@ -25,29 +25,13 @@ const Menuitems = [
   },
   {
     navlabel: true,
-    subheader: "Law Library",
+    subheader: "Services",
   },
   {
     id: uniqueId(),
     title: "Library",
     icon: IconBook,
     href: "/library",
-  },
-  {
-    id: uniqueId(),
-    title: "Mentors",
-    icon: IconUsers,
-    href: "/mentors",
-  },
-  {
-    id: uniqueId(),
-    title: "Feedback",
-    icon: IconMessage,
-    href: "/feedback",
-  },
-  {
-    navlabel: true,
-    subheader: "Extra",
   },
   {
     id: uniqueId(),
@@ -60,6 +44,24 @@ const Menuitems = [
     title: "AI Chatbot (Soon)",
     icon: IconRobot,
     href: "/ai",
+  },
+  {
+    id: uniqueId(),
+    title: "Mentors",
+    icon: IconUsers,
+    href: "/mentors",
+  },
+  {
+    id: uniqueId(),
+    title: "Upcoming Events",
+    icon: IconRobot,
+    href: "/events",
+  },
+  {
+    id: uniqueId(),
+    title: "Feedback",
+    icon: IconMessage,
+    href: "/feedback",
   },
 ];
 
