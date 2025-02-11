@@ -37,7 +37,6 @@ const Account = () => {
           const parsedUser: User = JSON.parse(storedUser);
           const response = await fetch(`https://api.ilc.limited/api/users/email/${parsedUser.email}`);
 
-          
           if (!response.ok) {
             throw new Error("Failed to fetch user data");
           }
@@ -57,8 +56,6 @@ const Account = () => {
   
     fetchUser();
   }, []);
-  
-  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (formData) {
@@ -89,7 +86,6 @@ const Account = () => {
         const data = await response.json();
 
         if (data.user) {
-          // Store updated user data properly
           localStorage.setItem("user", JSON.stringify(data.user));
           setUser(data.user);
           setFormData(data.user);
@@ -108,8 +104,30 @@ const Account = () => {
     }
   };
 
-
-  if (!user) return <Typography>Loading...</Typography>;
+  // 🌟 If user is not logged in, show a fun message 🌟
+  if (!user) {
+    return (
+      <Container maxWidth="sm">
+        <Box textAlign="center" my={6}>
+          <Typography variant="h4" fontWeight="bold">
+            🚀 Welcome, Explorer!
+          </Typography>
+          <Typography variant="body1" color="textSecondary" mt={2}>
+            It looks like you haven not set up your account yet.  
+            Join us and unlock a world of knowledge, connections, and opportunities!  
+          </Typography>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            sx={{ mt: 3 }}
+            onClick={() => router.push("/authentication/register")}
+          >
+            Register Now
+          </Button>
+        </Box>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="sm">
@@ -201,7 +219,6 @@ const Account = () => {
             Edit Profile
           </Button>
         )}
-
       </Box>
     </Container>
   );
