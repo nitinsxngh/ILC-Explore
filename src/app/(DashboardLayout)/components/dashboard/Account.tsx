@@ -70,7 +70,7 @@ const Account = () => {
       try {
         const lowerCaseEmail = formData.email.toLowerCase();
   
-        const response = await fetch(`http://localhost:5002/api/users/${lowerCaseEmail}`, {
+        const response = await fetch(`https://api.ilc.limited/api/users/${lowerCaseEmail}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
