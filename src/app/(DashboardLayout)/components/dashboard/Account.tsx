@@ -21,7 +21,7 @@ interface User {
   yearsOfExperience?: number;
 }
 
-const AccountPage = () => {
+const Account = () => {
   const [user, setUser] = useState<User | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState<User | null>(null);
@@ -73,7 +73,7 @@ const AccountPage = () => {
       try {
         const lowerCaseEmail = formData.email.toLowerCase();
   
-        const response = await fetch(`https://api.ilc.limited/api/users/${lowerCaseEmail}`, {
+        const response = await fetch(`http://localhost:5002/api/users/${lowerCaseEmail}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -207,4 +207,4 @@ const AccountPage = () => {
   );
 };
 
-export default AccountPage;
+export default Account;

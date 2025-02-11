@@ -1,59 +1,74 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, FormControlLabel, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack } from '@mui/material';
-import Link from 'next/link';
-import CustomTextField from '@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField';
-import { ContentCopy } from '@mui/icons-material'; // For the copy icon
+import {
+  Box,
+  Typography,
+  Button,
+  FormControlLabel,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  Alert,
+} from '@mui/material';
+import { ContentCopy } from '@mui/icons-material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import CustomTextField from '@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField';
 
-interface registerType {
+interface RegisterProps {
   title?: string;
   subtitle?: JSX.Element | JSX.Element[];
   subtext?: JSX.Element | JSX.Element[];
   category: string;
 }
 
-const generateRandomEmail = () => {
-  const randomString = Math.random().toString(36).substring(2, 10);
-  return `${randomString}@ilc.limited`;
-};
+const generateRandomEmail = () => `${Math.random().toString(36).substring(2, 10)}@ilc.limited`;
 
-const AuthRegister = ({ title, subtitle, subtext, category }: registerType) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, category }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
   const [isGuest, setIsGuest] = useState(false);
-  const [formError, setFormError] = useState<string[]>([]);
-  const [openPopup, setOpenPopup] = useState(false); // State to manage popup visibility
-  const [registeredEmail, setRegisteredEmail] = useState('');
-  const [registeredPassword, setRegisteredPassword] = useState('');
+  const [errors, setErrors] = useState<string[]>([]);
+  const [popupData, setPopupData] = useState<{ email: string; password: string } | null>(null);
   const router = useRouter();
 
-  const validateForm = () => {
-    const errors: string[] = [];
-
-    if (!name.trim()) errors.push('Name is required');
-
-    if (!isGuest) {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-      if (!email.trim() || !emailRegex.test(email)) errors.push('Please enter a valid email address');
-      if (password.length < 6) errors.push('Password must be at least 6 characters');
-      if (password !== confirmPassword) errors.push('Passwords do not match');
-    }
-
-    return errors;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const validateForm = () => {
+    const newErrors: string[] = [];
+    if (!formData.name.trim()) newErrors.push('Name is required');
+
+    if (isGuest) {
+      if (!formData.phone.trim()) newErrors.push('Phone number is required');
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!formData.email.trim() || !emailRegex.test(formData.email)) newErrors.push('Please enter a valid email');
+      if (formData.password.length < 6) newErrors.push('Password must be at least 6 characters');
+      if (formData.password !== formData.confirmPassword) newErrors.push('Passwords do not match');
+    }
+
+    return newErrors;
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const errors = validateForm();
-    setFormError(errors);
-    if (errors.length > 0) return;
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
+    if (validationErrors.length > 0) return;
 
     const userData = isGuest
-      ? { name, email: generateRandomEmail(), password: '12345678', category }
-      : { name, email, password, category };
+      ? { name: formData.name, phone: formData.phone, email: generateRandomEmail(), password: '12345678', category }
+      : { ...formData, category };
 
     try {
       const response = await axios.post('https://api.ilc.limited/api/users/register', userData, {
@@ -62,101 +77,119 @@ const AuthRegister = ({ title, subtitle, subtext, category }: registerType) => {
 
       if (response.status === 201) {
         console.log('User registered:', response.data);
+        setPopupData({ email: userData.email, password: userData.password });
         if (!isGuest) router.push('/authentication/login');
-        
-        // Set the registered email and password to show in the popup
-        setRegisteredEmail(userData.email);
-        setRegisteredPassword(userData.password);
-        setOpenPopup(true); // Open the popup
       }
     } catch (error: any) {
       console.error('Error registering user:', error);
-      setFormError([error.response?.data?.message || 'Something went wrong. Please try again later.']);
+      setErrors([error.response?.data?.message || 'Something went wrong. Try again later.']);
     }
-  };
-
-  const handleClosePopup = () => {
-    setOpenPopup(false); // Close the popup
-  };
-
-  const handleCopyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Copied to clipboard!');
-    });
   };
 
   return (
     <>
-      {title && <Typography fontWeight="700" variant="h2" mb={1}>{title}</Typography>}
+      {title && <Typography variant="h2" fontWeight="700" mb={1}>{title}</Typography>}
       {subtext}
+
       <Box component="form" onSubmit={handleSubmit}>
-        <Stack mb={3}>
-          <Typography variant="subtitle1" fontWeight={600} component="label" htmlFor="name" mb="5px">Name</Typography>
-          <CustomTextField id="name" variant="outlined" fullWidth value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)} />
+        <Stack mb={3} spacing={2}>
+          <CustomTextField
+            id="name"
+            label="Name"
+            variant="outlined"
+            fullWidth
+            value={formData.name}
+            onChange={handleChange}
+          />
 
           <FormControlLabel
             control={<Checkbox checked={isGuest} onChange={() => setIsGuest(!isGuest)} />}
             label="Register as Guest"
-            sx={{ mt: 2 }}
           />
 
-          {!isGuest && (
+          {isGuest ? (
+            <CustomTextField
+              id="phone"
+              label="Phone Number"
+              variant="outlined"
+              fullWidth
+              value={formData.phone}
+              onChange={handleChange}
+            />
+          ) : (
             <>
-              <Typography variant="subtitle1" fontWeight={600} component="label" htmlFor="email" mb="5px" mt="25px">Email Address</Typography>
-              <CustomTextField id="email" variant="outlined" fullWidth value={email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)} />
+              <CustomTextField
+                id="email"
+                label="Email Address"
+                variant="outlined"
+                fullWidth
+                value={formData.email}
+                onChange={handleChange}
+              />
 
-              <Typography variant="subtitle1" fontWeight={600} component="label" htmlFor="password" mb="5px" mt="25px">Password</Typography>
-              <CustomTextField id="password" variant="outlined" type="password" fullWidth value={password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} />
+              <CustomTextField
+                id="password"
+                label="Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                value={formData.password}
+                onChange={handleChange}
+              />
 
-              <Typography variant="subtitle1" fontWeight={600} component="label" htmlFor="confirmPassword" mb="5px" mt="25px">Confirm Password</Typography>
-              <CustomTextField id="confirmPassword" variant="outlined" type="password" fullWidth value={confirmPassword} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)} />
+              <CustomTextField
+                id="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
             </>
           )}
 
-          {formError.length > 0 && (
-            <Box sx={{ color: 'error.main', mt: 2 }}>
-              {formError.map((err, index) => (
-                <Typography key={index} variant="body2">{err}</Typography>
+          {errors.length > 0 && (
+            <Stack spacing={1}>
+              {errors.map((error, index) => (
+                <Alert severity="error" key={index}>{error}</Alert>
               ))}
-            </Box>
+            </Stack>
           )}
         </Stack>
+
         <Button type="submit" color="primary" variant="contained" size="large" fullWidth>
           {isGuest ? 'Register as Guest' : 'Sign Up'}
         </Button>
       </Box>
+
       {subtitle}
 
-      {/* Popup/Modal to show the email and password after registration */}
-      <Dialog open={openPopup} onClose={handleClosePopup} maxWidth="md" fullWidth>
+      {/* Success Popup */}
+      <Dialog open={!!popupData} onClose={() => setPopupData(null)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 'bold' }}>Registration Successful</DialogTitle>
         <DialogContent>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography variant="body1" fontWeight="bold" flex="1">Your email: {registeredEmail}</Typography>
-            <IconButton onClick={() => handleCopyToClipboard(registeredEmail)} color="primary">
-              <ContentCopy />
-            </IconButton>
-          </Stack>
-          
-          <Stack direction="row" alignItems="center" spacing={1} mt={2}>
-            <Typography variant="body1" fontWeight="bold" flex="1">Your password: {registeredPassword}</Typography>
-            <IconButton onClick={() => handleCopyToClipboard(registeredPassword)} color="primary">
-              <ContentCopy />
-            </IconButton>
-          </Stack>
+          {popupData && (
+            <>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Typography variant="body1" fontWeight="bold">Email: {popupData.email}</Typography>
+                <IconButton onClick={() => navigator.clipboard.writeText(popupData.email)} color="primary">
+                  <ContentCopy />
+                </IconButton>
+              </Stack>
+
+              <Stack direction="row" alignItems="center" spacing={1} mt={2}>
+                <Typography variant="body1" fontWeight="bold">Password: {popupData.password}</Typography>
+                <IconButton onClick={() => navigator.clipboard.writeText(popupData.password)} color="primary">
+                  <ContentCopy />
+                </IconButton>
+              </Stack>
+            </>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClosePopup} color="primary">
-            Close
-          </Button>
-          <Button
-            component="a"
-            href="/authentication/login"
-            target="_blank"
-            color="primary"
-          >
-            Login
-          </Button>
+          <Button onClick={() => setPopupData(null)} color="primary">Close</Button>
+          <Button href="/authentication/login" color="primary">Login</Button>
         </DialogActions>
       </Dialog>
     </>

@@ -7,10 +7,10 @@ import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCa
 import CloseIcon from '@mui/icons-material/Close';
 
 const events = [
-  { id: 1, title: '7 days AI Bootcamp', date: 'Feb 10, 2025', pdf: 'https://res.cloudinary.com/dhsivjlew/image/upload/v1738498781/nubuxz6ybtwwk4dph3ub.pdf' },
-  { id: 2, title: '7 Days Human Rights Bootcamp', date: 'Feb 10, 2025', pdf: 'https://res.cloudinary.com/dhsivjlew/image/upload/v1738498781/p3isjsmtflaaeoufimgz.pdf' },
-  { id: 3, title: '7 Days Legal Bootcamp', date: 'Jan 18, 2025', pdf: 'https://res.cloudinary.com/dhsivjlew/image/upload/v1738499291/dqx8fy56v9kkrrbgtwmw.pdf' },
-  { id: 4, title: 'Sales & Marketing Management', date: 'Jan 15, 2025', pdf: 'https://res.cloudinary.com/dhsivjlew/image/upload/v1738499291/owbpqrcnjepoioeqcmvc.pdf' }
+  { id: 1, title: '7 days AI Bootcamp', date: 'Feb 10, 2025', pdf: 'https://drive.google.com/file/d/1YRaaQB4JOIWWbGm4jMPo6TEfl0rYRqSU/view?usp=sharing' },
+  { id: 2, title: '7 Days Human Rights Bootcamp', date: 'Feb 10, 2025', pdf: 'https://drive.google.com/file/d/1ppU_NtaI0_2F8VWiw9RpYmerItbCfJXy/view?usp=sharing' },
+  { id: 3, title: '7 Days Legal Bootcamp', date: 'Jan 18, 2025', pdf: 'https://drive.google.com/file/d/1R8LboLND2gM0l3rY1vJSAWRPxh7cT8cV/view?usp=sharing' },
+  { id: 4, title: 'Sales & Marketing Management', date: 'Jan 15, 2025', pdf: 'https://drive.google.com/file/d/1BWG-zUJoukNzH0wcAt8EkkpuZoiOwqxB/view?usp=sharing' }
 ];
 
 const EventsPage = () => {
