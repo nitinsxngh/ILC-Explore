@@ -16,6 +16,7 @@ import {
   IconNews,
   IconCalendar,
   IconExternalLink,
+  IconUpload,
 } from "@tabler/icons-react";
 
 const Menuitems = [
@@ -113,6 +114,12 @@ const Menuitems = [
         href: "/events/call-for-paper",
       },
     ],
+  },
+  {
+    id: uniqueId(),
+    title: "Documents",
+    icon: IconUpload,
+    href: "/documents",
   },
 ];
 
