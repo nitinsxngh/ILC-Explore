@@ -1,15 +1,49 @@
 'use client'
-import { Grid, Box, Typography, Card, CardContent, Avatar, TextField, InputAdornment, IconButton, Chip, Stack, Button } from '@mui/material';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Grid, Box, Typography, Card, CardContent, Avatar, TextField, InputAdornment, IconButton, Chip, Stack, Button, CircularProgress } from '@mui/material';
 import { IconCrown, IconBook, IconCalendar, IconUsers, IconFileText, IconBrain } from '@tabler/icons-react';
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserData } from '@/hooks/useUserData';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import PersonalityTestResults from '@/components/PersonalityTestResults';
 import ResumePreview from '@/components/ResumePreview';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const { userData, loading: userDataLoading, error: userDataError } = useUserData();
+  const { isMentor, loading: profileLoading } = useUserProfile();
+  const router = useRouter();
+
+  // Redirect mentors to mentor dashboard
+  useEffect(() => {
+    if (!profileLoading && isMentor) {
+      router.replace('/mentor');
+    }
+  }, [isMentor, profileLoading, router]);
+
+  // Show loading while checking role
+  if (profileLoading) {
+    return (
+      <PageContainer title="Dashboard" description="Loading...">
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 200px)' }}>
+          <CircularProgress />
+        </Box>
+      </PageContainer>
+    );
+  }
+
+  // Don't render student dashboard if user is a mentor (will redirect)
+  if (isMentor) {
+    return (
+      <PageContainer title="Dashboard" description="Redirecting...">
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 200px)' }}>
+          <CircularProgress />
+        </Box>
+      </PageContainer>
+    );
+  }
   
   // Debug: Log current user info
   console.log('Current user:', user);

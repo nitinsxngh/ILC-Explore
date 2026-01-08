@@ -25,6 +25,14 @@ const Menuitems = [
     title: "Dashboard",
     icon: IconDashboard,
     href: "/",
+    studentOnly: true, // Only show for students
+  },
+  {
+    id: uniqueId(),
+    title: "Dashboard",
+    icon: IconDashboard,
+    href: "/mentor",
+    mentorOnly: true, // Main dashboard for mentors
   },
   {
     id: uniqueId(),
@@ -32,6 +40,7 @@ const Menuitems = [
     icon: IconCrown,
     href: "https://personalitytest.ilc.limited/test/",
     external: true,
+    studentOnly: true, // Only show for students
   },
   {
     id: uniqueId(),
@@ -39,6 +48,7 @@ const Menuitems = [
     icon: IconFileText,
     href: "https://resumebuilder.ilc.limited/editor",
     external: true,
+    studentOnly: true, // Only show for students
   },
   {
     id: uniqueId(),
@@ -58,6 +68,7 @@ const Menuitems = [
     title: "Library",
     icon: IconBook,
     href: "/library",
+    studentOnly: true, // Only show for students
     children: [
       {
         id: uniqueId(),
@@ -91,12 +102,14 @@ const Menuitems = [
     title: "News",
     icon: IconNews,
     href: "/news",
+    studentOnly: true, // Only show for students
   },
   {
     id: uniqueId(),
     title: "Events",
     icon: IconCalendar,
     href: "/events",
+    studentOnly: true, // Only show for students
     children: [
       {
         id: uniqueId(),
@@ -120,6 +133,14 @@ const Menuitems = [
     title: "Documents",
     icon: IconUpload,
     href: "/documents",
+    studentOnly: true, // Only show for students
+  },
+  {
+    id: uniqueId(),
+    title: "My Courses",
+    icon: IconBook,
+    href: "/mentor/courses",
+    mentorOnly: true, // Only show for mentors
   },
 ];
 

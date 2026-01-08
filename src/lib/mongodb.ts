@@ -2,6 +2,7 @@ import { MongoClient, Db } from 'mongodb';
 
 const MONGODB_URI_RESUME = process.env.MONGODB_URI_RESUME || 'mongodb+srv://hunnidassets:hunnidassets%40123@hunnidassets.6bll8ud.mongodb.net/ilc_resume?retryWrites=true&w=majority&appName=hunnidassets';
 const MONGODB_URI_PERSONALITY_TEST = process.env.MONGODB_URI_PERSONALITY_TEST || 'mongodb+srv://hunnidassets:hunnidassets%40123@hunnidassets.6bll8ud.mongodb.net/results?retryWrites=true&w=majority&appName=hunnidassets';
+const MONGODB_URI_EXPLORE = process.env.MONGODB_URI_EXPLORE || 'mongodb+srv://hunnidassets:hunnidassets%40123@hunnidassets.6bll8ud.mongodb.net/ilc_explore?retryWrites=true&w=majority&appName=hunnidassets';
 
 if (!MONGODB_URI_RESUME) {
   throw new Error('Please define the MONGODB_URI_RESUME environment variable inside .env.local');
@@ -13,6 +14,7 @@ if (!MONGODB_URI_PERSONALITY_TEST) {
 
 let cachedResumeClient: MongoClient | null = null;
 let cachedPersonalityTestClient: MongoClient | null = null;
+let cachedExploreClient: MongoClient | null = null;
 
 export async function connectToResumeDatabase(): Promise<{ client: MongoClient; db: Db }> {
   if (cachedResumeClient) {
@@ -82,6 +84,63 @@ export async function getUserPersonalityTestData(userEmail: string) {
   } catch (error) {
     console.error('Error fetching personality test data:', error);
     return null;
+  }
+}
+
+// Helper function to connect to explore database
+export async function connectToExploreDatabase(): Promise<{ client: MongoClient; db: Db }> {
+  if (cachedExploreClient) {
+    return {
+      client: cachedExploreClient,
+      db: cachedExploreClient.db('ilc_explore')
+    };
+  }
+
+  const client = new MongoClient(MONGODB_URI_EXPLORE!);
+  await client.connect();
+  
+  cachedExploreClient = client;
+  return {
+    client,
+    db: client.db('ilc_explore')
+  };
+}
+
+// Helper function to get user role and profile from explore database
+export async function getUserProfile(userId: string) {
+  try {
+    const { db } = await connectToExploreDatabase();
+    const collection = db.collection('users');
+    const userProfile = await collection.findOne({ userId });
+    return userProfile;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    return null;
+  }
+}
+
+// Helper function to create or update user profile
+export async function createOrUpdateUserProfile(userId: string, userData: any) {
+  try {
+    const { db } = await connectToExploreDatabase();
+    const collection = db.collection('users');
+    const result = await collection.findOneAndUpdate(
+      { userId },
+      { 
+        $set: { 
+          ...userData,
+          updatedAt: new Date()
+        }
+      },
+      { 
+        upsert: true,
+        returnDocument: 'after'
+      }
+    );
+    return result;
+  } catch (error) {
+    console.error('Error creating/updating user profile:', error);
+    throw error;
   }
 }
 

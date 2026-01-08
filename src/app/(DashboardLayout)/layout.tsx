@@ -5,6 +5,7 @@ import { styled, Container, Box, CircularProgress } from "@mui/material";
 import Header from "@/app/(DashboardLayout)/layout/header/Header";
 import Sidebar from "@/app/(DashboardLayout)/layout/sidebar/Sidebar";
 import AuthGuard from "@/components/AuthGuard";
+import RoleSelectionHandler from "@/components/RoleSelectionHandler";
 import { useAuth } from "@/contexts/AuthContext";
 
 const MainWrapper = styled("div")(() => ({
@@ -68,6 +69,7 @@ export default function RootLayout({
           </Box>
         ) : (
           <AuthGuard>
+            <RoleSelectionHandler />
             <Header toggleMobileSidebar={() => setMobileSidebarOpen(true)} />
             <Box
               sx={{
