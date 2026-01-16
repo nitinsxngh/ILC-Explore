@@ -14,20 +14,26 @@ import CareerTracksModal from '@/components/CareerTracksModal';
 const Dashboard = () => {
   const { user } = useAuth();
   const { userData, loading: userDataLoading, error: userDataError } = useUserData();
-  const { isMentor, loading: profileLoading, profile, updateProfile } = useUserProfile();
+  const { isMentor, isStartup, isProfessor, loading: profileLoading, profile, updateProfile } = useUserProfile();
   const router = useRouter();
   const [showCareerTracksModal, setShowCareerTracksModal] = useState(false);
 
-  // Redirect mentors to mentor dashboard
+  // Redirect non-students to their respective dashboards
   useEffect(() => {
-    if (!profileLoading && isMentor) {
-      router.replace('/mentor');
+    if (!profileLoading) {
+      if (isMentor) {
+        router.replace('/mentor');
+      } else if (isStartup) {
+        router.replace('/startup');
+      } else if (isProfessor) {
+        router.replace('/professor');
+      }
     }
-  }, [isMentor, profileLoading, router]);
+  }, [isMentor, isStartup, isProfessor, profileLoading, router]);
 
   // Show career tracks modal for students who haven't subscribed
   useEffect(() => {
-    if (!profileLoading && !isMentor && user) {
+    if (!profileLoading && !isMentor && !isStartup && !isProfessor && user) {
       // Only show if profile exists and student details are completed but no track selected
       if (profile?.studentDetails?.completed && !profile.studentDetails?.careerTrack) {
         // Show modal after a short delay for better UX
@@ -37,7 +43,7 @@ const Dashboard = () => {
         return () => clearTimeout(timer);
       }
     }
-  }, [profileLoading, isMentor, profile, user]);
+  }, [profileLoading, isMentor, isStartup, isProfessor, profile, user]);
 
   const handleTrackSelection = async (track: "discovery" | "execution" | "acceleration") => {
     try {
@@ -80,8 +86,8 @@ const Dashboard = () => {
     );
   }
 
-  // Don't render student dashboard if user is a mentor (will redirect)
-  if (isMentor) {
+  // Don't render student dashboard if user is not a student (will redirect)
+  if (isMentor || isStartup || isProfessor) {
     return (
       <PageContainer title="Dashboard" description="Redirecting...">
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 200px)' }}>
