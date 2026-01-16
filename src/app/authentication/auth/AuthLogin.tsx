@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import { Box, Typography, FormGroup, FormControlLabel, Button, Stack, Checkbox, Divider } from "@mui/material";
 import Link from "next/link";
 import CustomTextField from "@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { IconBrandGoogle } from "@tabler/icons-react";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { styled, Container, Box, CircularProgress } from "@mui/material";
 import Header from "@/app/(DashboardLayout)/layout/header/Header";
 import Sidebar from "@/app/(DashboardLayout)/layout/sidebar/Sidebar";
@@ -69,7 +69,9 @@ export default function RootLayout({
           </Box>
         ) : (
           <AuthGuard>
-            <RoleSelectionHandler />
+            <Suspense fallback={null}>
+              <RoleSelectionHandler />
+            </Suspense>
             <Header toggleMobileSidebar={() => setMobileSidebarOpen(true)} />
             <Box
               sx={{

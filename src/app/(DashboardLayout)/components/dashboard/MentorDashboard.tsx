@@ -98,11 +98,11 @@ const MentorDashboard = () => {
                 Welcome, {mentorDetails?.fullName || user?.displayName || "Mentor"}!
               </Typography>
               <Typography variant="body1" sx={{ opacity: 0.9, mb: 2 }}>
-                {mentorDetails?.title} at {mentorDetails?.company}
+                {mentorDetails?.currentRole} at {mentorDetails?.organization}
               </Typography>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Chip
-                  label={mentorDetails?.specialization || "Mentor"}
+                  label={mentorDetails?.areasOfExpertise?.[0] || "Mentor"}
                   sx={{
                     bgcolor: "rgba(255, 255, 255, 0.2)",
                     color: "white",
@@ -110,7 +110,7 @@ const MentorDashboard = () => {
                   }}
                 />
                 <Chip
-                  label={mentorDetails?.experience || "Experienced"}
+                  label={mentorDetails?.yearsOfExperience || "Experienced"}
                   sx={{
                     bgcolor: "rgba(255, 255, 255, 0.2)",
                     color: "white",
@@ -513,7 +513,7 @@ const MentorDashboard = () => {
                       Specialization
                     </Typography>
                     <Typography variant="body1" fontWeight={600} sx={{ color: "#1f2937", mt: 0.5 }}>
-                      {mentorDetails?.specialization || "Not set"}
+                      {mentorDetails?.areasOfExpertise?.join(", ") || "Not set"}
                     </Typography>
                   </Box>
                   <Divider sx={{ borderColor: "#e5e7eb" }} />
@@ -525,7 +525,7 @@ const MentorDashboard = () => {
                       Experience
                     </Typography>
                     <Typography variant="body1" fontWeight={600} sx={{ color: "#1f2937", mt: 0.5 }}>
-                      {mentorDetails?.experience || "Not set"}
+                      {mentorDetails?.yearsOfExperience || "Not set"}
                     </Typography>
                   </Box>
                   <Divider sx={{ borderColor: "#e5e7eb" }} />
@@ -537,7 +537,7 @@ const MentorDashboard = () => {
                       Company
                     </Typography>
                     <Typography variant="body1" fontWeight={600} sx={{ color: "#1f2937", mt: 0.5 }}>
-                      {mentorDetails?.company || "Not set"}
+                      {mentorDetails?.organization || "Not set"}
                     </Typography>
                   </Box>
                 </Stack>

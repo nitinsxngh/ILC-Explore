@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,19 +10,44 @@ import {
   Box,
   Avatar,
 } from "@mui/material";
-import { IconUser, IconSchool, IconLock } from "@tabler/icons-react";
+import { IconUser, IconSchool, IconLock, IconRocket, IconUserCircle } from "@tabler/icons-react";
+
+type UserRole = "student" | "startup" | "mentor" | "professor";
 
 interface RoleSelectionModalProps {
   open: boolean;
-  onSelectRole: (role: "student" | "mentor") => void;
+  onSelectRole: (role: UserRole) => void;
   userName?: string;
+  preselectedRole?: string | null;
 }
 
 const RoleSelectionModal: React.FC<RoleSelectionModalProps> = ({
   open,
   onSelectRole,
   userName,
+  preselectedRole,
 }) => {
+  // Auto-select role if provided - handle both MENTOR and MENTORS
+  useEffect(() => {
+    if (preselectedRole && open) {
+      // Normalize role: remove trailing 'S' if present (MENTORS -> MENTOR)
+      const normalizedRole = preselectedRole.toUpperCase().replace(/S$/, "");
+      const roleMap: { [key: string]: UserRole } = {
+        STUDENT: "student",
+        STARTUP: "startup",
+        MENTOR: "mentor",
+        PROFESSOR: "professor",
+      };
+      const mappedRole = roleMap[normalizedRole];
+      if (mappedRole) {
+        // Small delay to ensure modal is rendered
+        setTimeout(() => {
+          onSelectRole(mappedRole);
+        }, 100);
+      }
+    }
+  }, [preselectedRole, open, onSelectRole]);
+
   return (
     <Dialog
       open={open}
@@ -131,6 +156,50 @@ const RoleSelectionModal: React.FC<RoleSelectionModalProps> = ({
             <Button
               variant="outlined"
               fullWidth
+              onClick={() => onSelectRole("startup")}
+              sx={{
+                py: 2.5,
+                borderRadius: 2,
+                borderColor: "#e5e7eb",
+                borderWidth: 2,
+                "&:hover": {
+                  borderColor: "#6366f1",
+                  borderWidth: 2,
+                  bgcolor: "#f5f3ff",
+                },
+              }}
+            >
+              <Stack direction="row" spacing={2} alignItems="center" sx={{ width: "100%" }}>
+                <Avatar
+                  sx={{
+                    bgcolor: "#10b981",
+                    width: 48,
+                    height: 48,
+                  }}
+                >
+                  <IconRocket size={24} />
+                </Avatar>
+                <Box sx={{ flex: 1, textAlign: "left" }}>
+                  <Typography
+                    variant="h6"
+                    fontWeight={600}
+                    sx={{ color: "#1f2937" }}
+                  >
+                    I&apos;m a Startup
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "#6b7280" }}
+                  >
+                    Build and grow your startup
+                  </Typography>
+                </Box>
+              </Stack>
+            </Button>
+
+            <Button
+              variant="outlined"
+              fullWidth
               onClick={() => onSelectRole("mentor")}
               sx={{
                 py: 2.5,
@@ -167,6 +236,50 @@ const RoleSelectionModal: React.FC<RoleSelectionModalProps> = ({
                     sx={{ color: "#6b7280" }}
                   >
                     Share your expertise and teach students
+                  </Typography>
+                </Box>
+              </Stack>
+            </Button>
+
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => onSelectRole("professor")}
+              sx={{
+                py: 2.5,
+                borderRadius: 2,
+                borderColor: "#e5e7eb",
+                borderWidth: 2,
+                "&:hover": {
+                  borderColor: "#6366f1",
+                  borderWidth: 2,
+                  bgcolor: "#f5f3ff",
+                },
+              }}
+            >
+              <Stack direction="row" spacing={2} alignItems="center" sx={{ width: "100%" }}>
+                <Avatar
+                  sx={{
+                    bgcolor: "#8b5cf6",
+                    width: 48,
+                    height: 48,
+                  }}
+                >
+                  <IconUserCircle size={24} />
+                </Avatar>
+                <Box sx={{ flex: 1, textAlign: "left" }}>
+                  <Typography
+                    variant="h6"
+                    fontWeight={600}
+                    sx={{ color: "#1f2937" }}
+                  >
+                    I&apos;m a Professor
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "#6b7280" }}
+                  >
+                    Teach and guide students academically
                   </Typography>
                 </Box>
               </Stack>

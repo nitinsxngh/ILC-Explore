@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, role, mentorDetails } = body;
+    const { userId, role, studentDetails, startupDetails, mentorDetails, professorDetails } = body;
 
     if (!userId) {
       return NextResponse.json(
@@ -60,10 +60,31 @@ export async function POST(request: NextRequest) {
       profileData.role = role;
     }
 
+    if (studentDetails) {
+      profileData.studentDetails = {
+        ...studentDetails,
+        completed: studentDetails.completed !== undefined ? studentDetails.completed : true,
+      };
+    }
+
+    if (startupDetails) {
+      profileData.startupDetails = {
+        ...startupDetails,
+        completed: startupDetails.completed !== undefined ? startupDetails.completed : true,
+      };
+    }
+
     if (mentorDetails) {
       profileData.mentorDetails = {
         ...mentorDetails,
-        completed: true,
+        completed: mentorDetails.completed !== undefined ? mentorDetails.completed : true,
+      };
+    }
+
+    if (professorDetails) {
+      profileData.professorDetails = {
+        ...professorDetails,
+        completed: professorDetails.completed !== undefined ? professorDetails.completed : true,
       };
     }
 

@@ -30,9 +30,9 @@ export async function GET(request: NextRequest) {
           return {
             ...course,
             mentorName: mentorProfile.mentorDetails.fullName,
-            mentorTitle: mentorProfile.mentorDetails.title,
-            mentorExperience: mentorProfile.mentorDetails.experience,
-            mentorCompany: mentorProfile.mentorDetails.company,
+            mentorTitle: mentorProfile.mentorDetails.currentRole,
+            mentorExperience: mentorProfile.mentorDetails.yearsOfExperience,
+            mentorCompany: mentorProfile.mentorDetails.organization,
           };
         }
         return course;

@@ -5,17 +5,62 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface UserProfile {
   userId: string;
-  role?: "student" | "mentor";
+  role?: "student" | "startup" | "mentor" | "professor";
+  studentDetails?: {
+    fullName: string;
+    age: string;
+    email: string;
+    mobileNumber: string;
+    parentName: string;
+    parentEmail: string;
+    parentMobileNumber: string;
+    collegeName: string;
+    courseDegree: string;
+    yearOfStudy: string;
+    incomeGroup: string;
+    category: "EWS" | "General" | "";
+    ewsVerificationNumber?: string;
+    completed: boolean;
+  };
+  startupDetails?: {
+    founderName: string;
+    email: string;
+    mobileNumber: string;
+    startupName: string;
+    stageOfStartup: string;
+    industryDomain: string;
+    websiteUrl: string;
+    linkedinUrl: string;
+    city: string;
+    state: string;
+    fullAddress: string;
+    gstNumber: string;
+    incorporationDetails: string;
+    completed: boolean;
+  };
   mentorDetails?: {
     fullName: string;
-    title: string;
-    experience: string;
-    company: string;
-    specialization: string;
-    bio: string;
     email: string;
-    phone?: string;
-    linkedin?: string;
+    mobileNumber: string;
+    currentRole: string;
+    organization: string;
+    yearsOfExperience: string;
+    areasOfExpertise: string[];
+    city: string;
+    state: string;
+    currentlyWorking: boolean;
+    totalYearsOfExperience: string;
+    linkedinUrl: string;
+    completed: boolean;
+  };
+  professorDetails?: {
+    fullName: string;
+    institutionalEmail: string;
+    mobileNumber: string;
+    collegeUniversityName: string;
+    subjectDepartment: string;
+    yearsOfTeachingExperience: string;
+    linkedinUrl: string;
     completed: boolean;
   };
   createdAt?: Date;
@@ -92,9 +137,14 @@ export const useUserProfile = () => {
     error,
     updateProfile,
     isMentor: profile?.role === "mentor",
-    isStudent: profile?.role === "student" || !profile?.role,
+    isStudent: profile?.role === "student",
+    isStartup: profile?.role === "startup",
+    isProfessor: profile?.role === "professor",
     hasRole: !!profile?.role,
+    studentDetailsComplete: profile?.studentDetails?.completed || false,
+    startupDetailsComplete: profile?.startupDetails?.completed || false,
     mentorDetailsComplete: profile?.mentorDetails?.completed || false,
+    professorDetailsComplete: profile?.professorDetails?.completed || false,
   };
 };
 
