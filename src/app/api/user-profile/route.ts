@@ -106,13 +106,54 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, ...updateData } = body;
+    const { userId, studentDetails, startupDetails, mentorDetails, professorDetails } = body;
 
     if (!userId) {
       return NextResponse.json(
         { error: 'User ID is required' },
         { status: 400 }
       );
+    }
+
+    // Get existing profile to merge updates
+    const existingProfile = await getUserProfile(userId);
+    
+    const updateData: any = {};
+
+    // Merge student details if provided
+    if (studentDetails) {
+      updateData.studentDetails = {
+        ...(existingProfile?.studentDetails || {}),
+        ...studentDetails,
+        completed: studentDetails.completed !== undefined ? studentDetails.completed : existingProfile?.studentDetails?.completed || false,
+      };
+    }
+
+    // Merge startup details if provided
+    if (startupDetails) {
+      updateData.startupDetails = {
+        ...(existingProfile?.startupDetails || {}),
+        ...startupDetails,
+        completed: startupDetails.completed !== undefined ? startupDetails.completed : existingProfile?.startupDetails?.completed || false,
+      };
+    }
+
+    // Merge mentor details if provided
+    if (mentorDetails) {
+      updateData.mentorDetails = {
+        ...(existingProfile?.mentorDetails || {}),
+        ...mentorDetails,
+        completed: mentorDetails.completed !== undefined ? mentorDetails.completed : existingProfile?.mentorDetails?.completed || false,
+      };
+    }
+
+    // Merge professor details if provided
+    if (professorDetails) {
+      updateData.professorDetails = {
+        ...(existingProfile?.professorDetails || {}),
+        ...professorDetails,
+        completed: professorDetails.completed !== undefined ? professorDetails.completed : existingProfile?.professorDetails?.completed || false,
+      };
     }
 
     const result = await createOrUpdateUserProfile(userId, updateData);

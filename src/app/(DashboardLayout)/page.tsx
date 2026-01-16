@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Grid, Box, Typography, Card, CardContent, Avatar, TextField, InputAdornment, IconButton, Chip, Stack, Button, CircularProgress } from '@mui/material';
 import { IconCrown, IconBook, IconCalendar, IconUsers, IconFileText, IconBrain } from '@tabler/icons-react';
@@ -9,12 +9,14 @@ import { useUserData } from '@/hooks/useUserData';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import PersonalityTestResults from '@/components/PersonalityTestResults';
 import ResumePreview from '@/components/ResumePreview';
+import CareerTracksModal from '@/components/CareerTracksModal';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const { userData, loading: userDataLoading, error: userDataError } = useUserData();
-  const { isMentor, loading: profileLoading } = useUserProfile();
+  const { isMentor, loading: profileLoading, profile, updateProfile } = useUserProfile();
   const router = useRouter();
+  const [showCareerTracksModal, setShowCareerTracksModal] = useState(false);
 
   // Redirect mentors to mentor dashboard
   useEffect(() => {
@@ -22,6 +24,50 @@ const Dashboard = () => {
       router.replace('/mentor');
     }
   }, [isMentor, profileLoading, router]);
+
+  // Show career tracks modal for students who haven't subscribed
+  useEffect(() => {
+    if (!profileLoading && !isMentor && user) {
+      // Only show if profile exists and student details are completed but no track selected
+      if (profile?.studentDetails?.completed && !profile.studentDetails?.careerTrack) {
+        // Show modal after a short delay for better UX
+        const timer = setTimeout(() => {
+          setShowCareerTracksModal(true);
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [profileLoading, isMentor, profile, user]);
+
+  const handleTrackSelection = async (track: "discovery" | "execution" | "acceleration") => {
+    try {
+      if (!user) return;
+
+      // Update profile with selected career track using PUT method
+      const response = await fetch("/api/user-profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.uid,
+          studentDetails: {
+            careerTrack: track,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        setShowCareerTracksModal(false);
+        // Reload the page to refresh the profile data
+        window.location.reload();
+      } else {
+        console.error("Failed to update career track");
+      }
+    } catch (error) {
+      console.error("Error updating career track:", error);
+    }
+  };
 
   // Show loading while checking role
   if (profileLoading) {
@@ -361,6 +407,14 @@ const Dashboard = () => {
           </Card>
         </Box>
       </Box>
+
+      {/* Career Tracks Modal */}
+      <CareerTracksModal
+        open={showCareerTracksModal}
+        onClose={() => setShowCareerTracksModal(false)}
+        onSelectTrack={handleTrackSelection}
+        userName={user?.displayName || user?.email?.split('@')[0] || 'Student'}
+      />
     </PageContainer>
   )
 }

@@ -20,6 +20,7 @@ interface UserProfile {
     incomeGroup: string;
     category: "EWS" | "General" | "";
     ewsVerificationNumber?: string;
+    careerTrack?: "discovery" | "execution" | "acceleration";
     completed: boolean;
   };
   startupDetails?: {
