@@ -1,18 +1,28 @@
 "use client";
-import { Grid, Box, Card, Typography, Stack, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { Grid, Box, Card, Typography, Stack } from "@mui/material";
 import Link from "next/link";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import AuthRegister from "../auth/AuthRegister";
-import { SelectChangeEvent } from '@mui/material/Select'; // Import SelectChangeEvent type
+import { useSearchParams } from "next/navigation";
 
-const Register2 = () => {
-  const [category, setCategory] = useState("student");
-
-  const handleCategoryChange = (event: SelectChangeEvent<string>) => {
-    setCategory(event.target.value); // SelectChangeEvent<string> type ensures 'event.target.value' is a string
+const Register2Content = () => {
+  const searchParams = useSearchParams();
+  const roleParam = searchParams.get("role");
+  
+  // Map URL role parameter to role value
+  const getRoleFromParam = (param: string | null): "student" | "startup" | "mentor" | "professor" | null => {
+    if (!param) return null;
+    const upperParam = param.toUpperCase();
+    if (upperParam === "STUDENT") return "student";
+    if (upperParam === "STARTUP") return "startup";
+    if (upperParam === "MENTOR" || upperParam === "MENTORS") return "mentor";
+    if (upperParam === "PROFESSOR") return "professor";
+    return null;
   };
+
+  const role = getRoleFromParam(roleParam);
 
   return (
     <PageContainer title="Register" description="this is Register page">
@@ -35,41 +45,40 @@ const Register2 = () => {
           container
           spacing={0}
           justifyContent="center"
-          sx={{ height: "100vh" }}
+          sx={{ 
+            height: "100vh",
+            overflow: "auto",
+            py: { xs: 2, md: 4 }
+          }}
         >
           <Grid
             item
             xs={12}
-            sm={12}
-            lg={4}
-            xl={3}
+            sm={10}
+            md={8}
+            lg={7}
+            xl={6}
             display="flex"
             justifyContent="center"
-            alignItems="center"
+            alignItems="flex-start"
+            sx={{ pt: { xs: 2, md: 4 } }}
           >
             <Card
               elevation={9}
-              sx={{ p: 4, zIndex: 1, width: "100%", maxWidth: "500px" }}
+              sx={{ 
+                p: { xs: 3, sm: 4, md: 5 },
+                zIndex: 1,
+                width: "100%",
+                maxWidth: { xs: "100%", sm: "800px", md: "900px", lg: "1000px" },
+                maxHeight: { xs: "none", md: "95vh" },
+                overflow: "auto"
+              }}
             >
               <Box display="flex" alignItems="center" justifyContent="center">
                 <Logo />
               </Box>
-              <FormControl fullWidth sx={{ marginBottom: "20px" }}>
-                <InputLabel id="category-label">Select Category</InputLabel>
-                <Select
-                  labelId="category-label"
-                  id="category"
-                  value={category}
-                  label="Select Category"
-                  onChange={handleCategoryChange}
-                >
-                  <MenuItem value="student">Student</MenuItem>
-                  <MenuItem value="professor">Professor</MenuItem>
-                  <MenuItem value="professional">Professional</MenuItem>
-                </Select>
-              </FormControl>
               <AuthRegister
-                category={category}
+                role={role || "student"}
                 subtext={
                   <Typography
                     variant="subtitle1"
@@ -113,6 +122,14 @@ const Register2 = () => {
         </Grid>
       </Box>
     </PageContainer>
+  );
+};
+
+const Register2 = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Register2Content />
+    </Suspense>
   );
 };
 
