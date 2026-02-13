@@ -163,62 +163,10 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
       }
     }
 
-    // Role-specific validation
+    // Role-specific validation (optional fields)
     if (selectedRole === "student") {
-      if (!roleData.fullName?.trim()) newErrors.fullName = "Full name is required";
-      if (!roleData.age?.trim()) newErrors.age = "Age is required";
-      if (!roleData.mobileNumber?.trim()) newErrors.mobileNumber = "Mobile number is required";
-      if (!roleData.parentName?.trim()) newErrors.parentName = "Parent name is required";
-      if (!roleData.parentEmail?.trim()) {
-        newErrors.parentEmail = "Parent email is required";
-      } else if (!emailRegex.test(roleData.parentEmail)) {
+      if (roleData.parentEmail?.trim() && !emailRegex.test(roleData.parentEmail)) {
         newErrors.parentEmail = "Invalid email format";
-      }
-      if (!roleData.parentMobileNumber?.trim()) newErrors.parentMobileNumber = "Parent mobile number is required";
-      if (!roleData.collegeName?.trim()) newErrors.collegeName = "College name is required";
-      if (!roleData.courseDegree?.trim()) newErrors.courseDegree = "Course/Degree is required";
-      if (!roleData.yearOfStudy?.trim()) newErrors.yearOfStudy = "Year of study is required";
-      if (!roleData.incomeGroup?.trim()) newErrors.incomeGroup = "Income group is required";
-      if (!roleData.category) newErrors.category = "Category is required";
-      if (roleData.category === "EWS" && !roleData.ewsVerificationNumber?.trim()) {
-        newErrors.ewsVerificationNumber = "EWS verification number is required";
-      }
-    } else if (selectedRole === "startup") {
-      if (!roleData.founderName?.trim()) newErrors.founderName = "Founder name is required";
-      if (!roleData.mobileNumber?.trim()) newErrors.mobileNumber = "Mobile number is required";
-      if (!roleData.startupName?.trim()) newErrors.startupName = "Startup name is required";
-      if (!roleData.stageOfStartup) newErrors.stageOfStartup = "Stage of startup is required";
-      if (!roleData.industryDomain?.trim()) newErrors.industryDomain = "Industry domain is required";
-      if (!roleData.city?.trim()) newErrors.city = "City is required";
-      if (!roleData.state?.trim()) newErrors.state = "State is required";
-      if (!roleData.fullAddress?.trim()) newErrors.fullAddress = "Full address is required";
-      if (!roleData.gstNumber?.trim()) newErrors.gstNumber = "GST number is required";
-      if (!roleData.incorporationDetails?.trim()) newErrors.incorporationDetails = "Incorporation details are required";
-    } else if (selectedRole === "mentor") {
-      if (!roleData.fullName?.trim()) newErrors.fullName = "Full name is required";
-      if (!roleData.mobileNumber?.trim()) newErrors.mobileNumber = "Mobile number is required";
-      if (!roleData.currentRole?.trim()) newErrors.currentRole = "Current role is required";
-      if (!roleData.organization?.trim()) newErrors.organization = "Organization is required";
-      if (!roleData.yearsOfExperience) newErrors.yearsOfExperience = "Years of experience is required";
-      if (!roleData.areasOfExpertise || roleData.areasOfExpertise.length === 0) {
-        newErrors.areasOfExpertise = "At least one area of expertise is required";
-      }
-      if (!roleData.city?.trim()) newErrors.city = "City is required";
-      if (!roleData.state?.trim()) newErrors.state = "State is required";
-      if (!roleData.totalYearsOfExperience?.trim()) {
-        newErrors.totalYearsOfExperience = "Total years of experience is required";
-      }
-    } else if (selectedRole === "professor") {
-      if (!roleData.fullName?.trim()) newErrors.fullName = "Full name is required";
-      if (!roleData.mobileNumber?.trim()) newErrors.mobileNumber = "Mobile number is required";
-      if (!roleData.collegeUniversityName?.trim()) {
-        newErrors.collegeUniversityName = "College/University name is required";
-      }
-      if (!roleData.subjectDepartment?.trim()) {
-        newErrors.subjectDepartment = "Subject/Department is required";
-      }
-      if (!roleData.yearsOfTeachingExperience) {
-        newErrors.yearsOfTeachingExperience = "Years of teaching experience is required";
       }
     }
 
@@ -327,70 +275,7 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
     }
   };
 
-  const isFormFilled = (): boolean => {
-    // Check role-specific required fields
-    // Email/password only required for email registration method
-    if (selectedRole === "student") {
-      return !!(
-        roleData.fullName?.trim() &&
-        roleData.age?.trim() &&
-        roleData.mobileNumber?.trim() &&
-        roleData.parentName?.trim() &&
-        roleData.parentEmail?.trim() &&
-        roleData.parentMobileNumber?.trim() &&
-        roleData.collegeName?.trim() &&
-        roleData.courseDegree?.trim() &&
-        roleData.yearOfStudy?.trim() &&
-        roleData.incomeGroup?.trim() &&
-        roleData.category &&
-        (roleData.category !== "EWS" || roleData.ewsVerificationNumber?.trim())
-      );
-    } else if (selectedRole === "startup") {
-      return !!(
-        roleData.founderName?.trim() &&
-        roleData.mobileNumber?.trim() &&
-        roleData.startupName?.trim() &&
-        roleData.stageOfStartup &&
-        roleData.industryDomain?.trim() &&
-        roleData.city?.trim() &&
-        roleData.state?.trim() &&
-        roleData.fullAddress?.trim() &&
-        roleData.gstNumber?.trim() &&
-        roleData.incorporationDetails?.trim()
-      );
-    } else if (selectedRole === "mentor") {
-      return !!(
-        roleData.fullName?.trim() &&
-        roleData.mobileNumber?.trim() &&
-        roleData.currentRole?.trim() &&
-        roleData.organization?.trim() &&
-        roleData.yearsOfExperience &&
-        roleData.areasOfExpertise &&
-        roleData.areasOfExpertise.length > 0 &&
-        roleData.city?.trim() &&
-        roleData.state?.trim() &&
-        roleData.totalYearsOfExperience?.trim()
-      );
-    } else if (selectedRole === "professor") {
-      return !!(
-        roleData.fullName?.trim() &&
-        roleData.mobileNumber?.trim() &&
-        roleData.collegeUniversityName?.trim() &&
-        roleData.subjectDepartment?.trim() &&
-        roleData.yearsOfTeachingExperience
-      );
-    }
-
-    return false;
-  };
-
   const handleGoogleLogin = async () => {
-    // Check if role-specific fields are filled
-    if (!isFormFilled()) {
-      setErrors({ submit: 'Please complete all required profile fields before proceeding.' });
-      return;
-    }
-
     setGoogleLoading(true);
     setErrors({});
 
@@ -525,7 +410,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("fullName")}
                 error={!!errors.fullName}
                 helperText={errors.fullName}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -538,7 +422,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("age")}
                 error={!!errors.age}
                 helperText={errors.age}
-                required
                 inputProps={{ min: 1, max: 100 }}
               />
             </Grid>
@@ -551,7 +434,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("mobileNumber")}
                 error={!!errors.mobileNumber}
                 helperText={errors.mobileNumber}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -563,7 +445,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("parentName")}
                 error={!!errors.parentName}
                 helperText={errors.parentName}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -576,7 +457,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("parentEmail")}
                 error={!!errors.parentEmail}
                 helperText={errors.parentEmail}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -588,7 +468,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("parentMobileNumber")}
                 error={!!errors.parentMobileNumber}
                 helperText={errors.parentMobileNumber}
-                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -600,7 +479,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("collegeName")}
                 error={!!errors.collegeName}
                 helperText={errors.collegeName}
-                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -612,7 +490,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("courseDegree")}
                 error={!!errors.courseDegree}
                 helperText={errors.courseDegree}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -625,7 +502,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("yearOfStudy")}
                 error={!!errors.yearOfStudy}
                 helperText={errors.yearOfStudy}
-                required
               >
                 {yearsOfStudy.map((year) => (
                   <MenuItem key={year} value={year}>
@@ -644,7 +520,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("incomeGroup")}
                 error={!!errors.incomeGroup}
                 helperText={errors.incomeGroup}
-                required
               >
                 {incomeGroups.map((group) => (
                   <MenuItem key={group} value={group}>
@@ -654,7 +529,7 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
               </TextField>
             </Grid>
             <Grid item xs={12} md={4}>
-              <FormControl component="fieldset" error={!!errors.category} required fullWidth>
+              <FormControl component="fieldset" error={!!errors.category} fullWidth>
                 <FormLabel component="legend" sx={{ fontSize: '0.875rem' }}>Category</FormLabel>
                 <RadioGroup
                   row
@@ -681,7 +556,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                   onChange={handleRoleDataChange("ewsVerificationNumber")}
                   error={!!errors.ewsVerificationNumber}
                   helperText={errors.ewsVerificationNumber}
-                  required
                 />
               </Grid>
             )}
@@ -699,7 +573,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("founderName")}
                 error={!!errors.founderName}
                 helperText={errors.founderName}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -711,7 +584,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("mobileNumber")}
                 error={!!errors.mobileNumber}
                 helperText={errors.mobileNumber}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -723,7 +595,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("startupName")}
                 error={!!errors.startupName}
                 helperText={errors.startupName}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -736,7 +607,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("stageOfStartup")}
                 error={!!errors.stageOfStartup}
                 helperText={errors.stageOfStartup}
-                required
               >
                 {stages.map((stage) => (
                   <MenuItem key={stage} value={stage}>
@@ -755,7 +625,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("industryDomain")}
                 error={!!errors.industryDomain}
                 helperText={errors.industryDomain}
-                required
               >
                 {industryDomains.map((domain) => (
                   <MenuItem key={domain} value={domain}>
@@ -793,7 +662,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("city")}
                 error={!!errors.city}
                 helperText={errors.city}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -806,7 +674,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("state")}
                 error={!!errors.state}
                 helperText={errors.state}
-                required
               >
                 {indianStates.map((state) => (
                   <MenuItem key={state} value={state}>
@@ -824,7 +691,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("gstNumber")}
                 error={!!errors.gstNumber}
                 helperText={errors.gstNumber}
-                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -838,7 +704,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("fullAddress")}
                 error={!!errors.fullAddress}
                 helperText={errors.fullAddress}
-                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -852,7 +717,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("incorporationDetails")}
                 error={!!errors.incorporationDetails}
                 helperText={errors.incorporationDetails}
-                required
               />
             </Grid>
           </Grid>
@@ -869,7 +733,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("fullName")}
                 error={!!errors.fullName}
                 helperText={errors.fullName}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -881,7 +744,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("mobileNumber")}
                 error={!!errors.mobileNumber}
                 helperText={errors.mobileNumber}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -893,7 +755,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("currentRole")}
                 error={!!errors.currentRole}
                 helperText={errors.currentRole}
-                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -905,7 +766,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("organization")}
                 error={!!errors.organization}
                 helperText={errors.organization}
-                required
               />
             </Grid>
             <Grid item xs={12} md={3}>
@@ -918,7 +778,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("yearsOfExperience")}
                 error={!!errors.yearsOfExperience}
                 helperText={errors.yearsOfExperience}
-                required
               >
                 {experienceOptions.map((option) => (
                   <MenuItem key={option} value={option}>
@@ -937,7 +796,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("totalYearsOfExperience")}
                 error={!!errors.totalYearsOfExperience}
                 helperText={errors.totalYearsOfExperience}
-                required
               >
                 {totalExperienceOptions.map((option) => (
                   <MenuItem key={option} value={option}>
@@ -962,7 +820,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                   }}
                   error={!!errors.areasOfExpertise}
                   helperText={errors.areasOfExpertise || "Type and press Enter to add"}
-                  required
                 />
                 <Box sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 1 }}>
                   {(roleData.areasOfExpertise || []).map((expertise: string) => (
@@ -985,7 +842,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("city")}
                 error={!!errors.city}
                 helperText={errors.city}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -998,7 +854,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("state")}
                 error={!!errors.state}
                 helperText={errors.state}
-                required
               >
                 {indianStates.map((state) => (
                   <MenuItem key={state} value={state}>
@@ -1048,7 +903,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("fullName")}
                 error={!!errors.fullName}
                 helperText={errors.fullName}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -1060,7 +914,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("mobileNumber")}
                 error={!!errors.mobileNumber}
                 helperText={errors.mobileNumber}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -1073,7 +926,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("yearsOfTeachingExperience")}
                 error={!!errors.yearsOfTeachingExperience}
                 helperText={errors.yearsOfTeachingExperience}
-                required
               >
                 {teachingExperienceOptions.map((option) => (
                   <MenuItem key={option} value={option}>
@@ -1091,7 +943,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("collegeUniversityName")}
                 error={!!errors.collegeUniversityName}
                 helperText={errors.collegeUniversityName}
-                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -1103,7 +954,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 onChange={handleRoleDataChange("subjectDepartment")}
                 error={!!errors.subjectDepartment}
                 helperText={errors.subjectDepartment}
-                required
               />
             </Grid>
             <Grid item xs={12}>
@@ -1301,7 +1151,7 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
                 size="medium"
           fullWidth
           onClick={handleGoogleLogin}
-                disabled={googleLoading || !isFormFilled() || !registrationMethod}
+                disabled={googleLoading || !registrationMethod}
           startIcon={<IconBrandGoogle size={20} />}
           sx={{
                   mt: 1,
@@ -1328,20 +1178,6 @@ const AuthRegister: React.FC<RegisterProps> = ({ title, subtitle, subtext, role:
               >
                 Please select a registration method above
               </Button>
-            )}
-            {registrationMethod === 'google' && !isFormFilled() && (
-              <Typography 
-                variant="caption" 
-                color="text.secondary" 
-                sx={{ 
-                  mt: 1, 
-                  display: "block",
-                  textAlign: "center",
-                  fontStyle: "italic"
-                }}
-              >
-                Please complete all required profile fields above
-              </Typography>
             )}
           </Grid>
         </Grid>
