@@ -28,6 +28,7 @@
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
     "firebase": "^12.2.1",
+    "firebase-admin": "^13.0.2",
     "formik": "^2.4.6",
     "framer-motion": "^12.23.6",
     "lodash": "^4.17.21",

@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged,
+  signInWithCustomToken,
   signInWithPopup,
   GoogleAuthProvider,
   updateProfile
@@ -15,6 +16,7 @@ import { auth } from '@/lib/firebase';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  ssoChecked: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
@@ -34,12 +36,34 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [ssoChecked, setSsoChecked] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    let attemptedSso = false;
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log('Auth state changed:', user ? 'User logged in' : 'User logged out');
       setUser(user);
+      
+      if (!user && !attemptedSso) {
+        attemptedSso = true;
+        try {
+          const res = await fetch('/api/auth/customToken', {
+            method: 'POST',
+            credentials: 'include'
+          });
+          const data = await res.json();
+          if (res.ok && data?.customToken) {
+            await signInWithCustomToken(auth, data.customToken);
+            return;
+          }
+        } catch {
+          // ignore
+        }
+      }
+
       setLoading(false);
+      setSsoChecked(true);
       
       // Store user data in localStorage for persistence
       if (user) {
@@ -103,6 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = {
     user,
     loading,
+    ssoChecked,
     signIn,
     signUp,
     signInWithGoogle,

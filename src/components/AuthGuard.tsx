@@ -9,14 +9,17 @@ interface AuthGuardProps {
 }
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, ssoChecked } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/authentication/login');
+    if (!loading && ssoChecked && !user) {
+      const returnTo = window.location.href;
+      window.location.assign(
+        `https://auth.ilc.limited/login?returnTo=${encodeURIComponent(returnTo)}`
+      );
     }
-  }, [user, loading, router]);
+  }, [user, loading, ssoChecked, router]);
 
   if (loading) {
     return (

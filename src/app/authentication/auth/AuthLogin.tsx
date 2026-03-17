@@ -21,7 +21,11 @@ const AuthLogin: React.FC<LoginType> = ({ title, subtitle, subtext }: LoginType)
   const [loading, setLoading] = useState<boolean>(false);
   const [googleLoading, setGoogleLoading] = useState<boolean>(false);
   const router = useRouter();
-  const { signIn, signInWithGoogle } = useAuth();
+  const { signIn, signInWithGoogle, user } = useAuth();
+
+  useEffect(() => {
+    if (user) router.push("/");
+  }, [user, router]);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
