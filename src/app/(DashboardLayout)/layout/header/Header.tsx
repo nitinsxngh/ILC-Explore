@@ -106,8 +106,14 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
           ) : (
             <Button
               variant="contained"
-              component={Link}
-              href="/authentication/login"
+              onClick={() => {
+                const returnTo = window.location.href;
+                window.location.assign(
+                  `https://auth.ilc.limited/login?returnTo=${encodeURIComponent(
+                    returnTo
+                  )}`
+                );
+              }}
               disableElevation
               color="primary"
             >
